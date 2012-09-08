@@ -239,24 +239,28 @@ function build_nyx-lib
 ######################
 function build_qt4
 {
+    echo "**** Building QT4"
     do_fetch openwebos/qt $1 qt4
     export STAGING_DIR=${LUNA_STAGING}
     if [ ! -f $BASE/qt-build-desktop/Makefile ] ; then
+        echo "**** Removing qt-build-desktop"
         rm -rf $BASE/qt-build-desktop
     fi
     if [ ! -d $BASE/qt-build-desktop ] ; then
+      echo "**** Rebuilding qt-build-desktop"
       mkdir -p $BASE/qt-build-desktop
       cd $BASE/qt-build-desktop
-      if [ ! -e ../qt4/palm-desktop-configure.orig ] ; then
-        cp -f ../qt4/palm-desktop-configure ../qt4/palm-desktop-configure.orig
-        sed -i 's/-opensource/-opensource -arch x86_64 -qpa -fast -qconfig palm -no-dbus/' ../qt4/palm-desktop-configure
-        sed -i 's/libs tools/libs/' ../qt4/palm-desktop-configure
+      if [ ! -e ../qt4/palm-desktop-configure-x64 ] ; then
+        cp -f ../qt4/palm-desktop-configure ../qt4/palm-desktop-configure-x64
+        chmod a+rwx ../qt4/palm-desktop-configure-x64
+        sed -i 's/-opensource/-opensource -arch x86_64 -qpa -fast -qconfig palm -no-dbus/' ../qt4/palm-desktop-configure-x64
+        sed -i 's/libs tools/libs/' ../qt4/palm-desktop-configure-x64
       fi
       # This export will be picked up by plugins/platforms/platforms.pro and xcb.pro
 	sed -i '/^# --> Palm$/,/^# <-- Palm$/d' ../qt4/mkspecs/linux-g++-64/qmake.conf
 	sed -i 's/#include "qdrawutil.h"/#include "qdrawutil.h"\n#include "qplatformdefs.h"/' ../qt4/src/gui/painting/qpixmapatlas.cpp
       export WEBOS_CONFIG="webos desktop"
-      ../qt4/palm-desktop-configure
+      ../qt4/palm-desktop-configure-x64
     fi
     cd $BASE/qt-build-desktop
     make $JOBS
