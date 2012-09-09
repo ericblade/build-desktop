@@ -352,7 +352,9 @@ function build_webkit
     export WEBKITOUTPUTDIR="WebKitBuild/isis-x86"
     
     # ArchLinux's gcc don't support -fuse-ld option, so remove it
-    sed -i 's/\-fuse\-ld=gold//' Tools/qmake/mkspecs/features/unix/default_post.prf
+    if [ -e /usr/bin/ld.gold ] ; then
+        sed -i 's/\-fuse\-ld=gold//' Tools/qmake/mkspecs/features/unix/default_post.prf
+    fi
     sed -i 's/\-Werror//' Tools/qmake/mkspecs/features/unix/default_post.prf
     
     # this is a bug when building with bison 2.6
@@ -740,6 +742,7 @@ function build_luna-sysmgr
 
     ##### To build from your local clone of luna-sysmgr, change the following line to "cd" to your clone's location
     cd $BASE/luna-sysmgr
+    sed -i 's/#ifdef __i386__/#if defined(__i386__) || defined (__x86_64__)/g' Src/Main.cpp
 
     if [ ! -e luna-desktop-build.stamp ] ; then
         if [ $SKIPSTUFF -eq 0 ] && [ -e debug-x86 ] && [ -e debug-x86/.obj ] ; then
